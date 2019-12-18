@@ -122,10 +122,12 @@ module.exports = function(sequelize, DataTypes) {
           where: {
             type: type,
             processingState: state,
-            processingStartTime: null
+            processingStartTime: {
+              [Op.or]: [null, {[Op.lt]: moment().subtract(1, 'hours').toDate()}]
+            }
           },
           attributes: models.Recording.processingAttributes,
-          order: [["recordingDateTime", "DESC"]],
+          order: [["recordingDateTime", "DESC NULLS FIRST"]],
           skipLocked: true,
           lock: t.LOCK.UPDATE,
           transaction: t
